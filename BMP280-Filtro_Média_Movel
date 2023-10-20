@@ -6,8 +6,8 @@ Adafruit_BMP280 bmp;
 
 #define TAMANHO_FILTRO 50
 
-float leiturasAltitude[TAMANHO_FILTRO];
-float leiturasTemperatura[TAMANHO_FILTRO];
+int32_t leiturasAltitude[TAMANHO_FILTRO];
+int32_t leiturasTemperatura[TAMANHO_FILTRO];
 int indice = 0;
 
 void setup() {
@@ -18,22 +18,22 @@ void setup() {
     Serial.println("Não foi possível encontrar um sensor BMP280.");
     while (1);
   }
-  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     // Modo de medição
-                  Adafruit_BMP280::SAMPLING_X2,     // Taxa de amostragem de temperatura
-                  Adafruit_BMP280::SAMPLING_X16,    // Taxa de amostragem de pressão
-                  Adafruit_BMP280::FILTER_X16,      // Filtro
-                  Adafruit_BMP280::STANDBY_MS_500); // Tempo de espera
+  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     
+                  Adafruit_BMP280::SAMPLING_X2,     
+                  Adafruit_BMP280::SAMPLING_X16,    
+                  Adafruit_BMP280::FILTER_X16,      
+                  Adafruit_BMP280::STANDBY_MS_500); 
 }
 
 void loop() {
   leituraFiltroBMP280();
 
   Serial.print("Altitude (com filtro): ");
-  Serial.print(leiturasAltitude[indice]);
+  Serial.print(leiturasAltitude[indice] / 100.0, 2); 
   Serial.println(" Metros");
 
   Serial.print("Temperatura (com filtro): ");
-  Serial.print(leiturasTemperatura[indice]);
+  Serial.print(leiturasTemperatura[indice] / 100.0, 2);
   Serial.println(" °C");
 
   indice = (indice + 1) % TAMANHO_FILTRO;
@@ -42,15 +42,15 @@ void loop() {
 }
 
 void leituraFiltroBMP280() {
-  float altitude = bmp.readAltitude(1013.25); // Pressão padrão em hPa, você pode ajustá-la
-  float temperatura = bmp.readTemperature();
+  int32_t altitude = (int32_t)(bmp.readAltitude(1013.25) * 100); 
+  int32_t temperatura = (int32_t)(bmp.readTemperature() * 100);
   leiturasAltitude[indice] = calcularMedia(altitude);
   leiturasTemperatura[indice] = calcularMedia(temperatura);
 }
 
-float calcularMedia(float novaLeitura) {
-  static float soma = 0;
-  static float buffer[TAMANHO_FILTRO];
+int32_t calcularMedia(int32_t novaLeitura) {
+  static int32_t soma = 0;
+  static int32_t buffer[TAMANHO_FILTRO];
   static int contador = 0;
 
   soma -= buffer[contador];
