@@ -1,0 +1,62 @@
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP280.h>
+
+Adafruit_BMP280 bmp;
+
+#define TAMANHO_FILTRO 50
+
+float leiturasAltitude[TAMANHO_FILTRO];
+float leiturasTemperatura[TAMANHO_FILTRO];
+int indice = 0;
+
+void setup() {
+  delay(10000);
+  Serial.begin(115200);
+
+  if (!bmp.begin(0x76)) {
+    Serial.println("Não foi possível encontrar um sensor BMP280.");
+    while (1);
+  }
+  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     // Modo de medição
+                  Adafruit_BMP280::SAMPLING_X2,     // Taxa de amostragem de temperatura
+                  Adafruit_BMP280::SAMPLING_X16,    // Taxa de amostragem de pressão
+                  Adafruit_BMP280::FILTER_X16,      // Filtro
+                  Adafruit_BMP280::STANDBY_MS_500); // Tempo de espera
+}
+
+void loop() {
+  leituraFiltroBMP280();
+
+  Serial.print("Altitude (com filtro): ");
+  Serial.print(leiturasAltitude[indice]);
+  Serial.println(" Metros");
+
+  Serial.print("Temperatura (com filtro): ");
+  Serial.print(leiturasTemperatura[indice]);
+  Serial.println(" °C");
+
+  indice = (indice + 1) % TAMANHO_FILTRO;
+
+  delay(1000);
+}
+
+void leituraFiltroBMP280() {
+  float altitude = bmp.readAltitude(1013.25); // Pressão padrão em hPa, você pode ajustá-la
+  float temperatura = bmp.readTemperature();
+  leiturasAltitude[indice] = calcularMedia(altitude);
+  leiturasTemperatura[indice] = calcularMedia(temperatura);
+}
+
+float calcularMedia(float novaLeitura) {
+  static float soma = 0;
+  static float buffer[TAMANHO_FILTRO];
+  static int contador = 0;
+
+  soma -= buffer[contador];
+  buffer[contador] = novaLeitura;
+  soma += novaLeitura;
+  contador = (contador + 1) % TAMANHO_FILTRO;
+
+  return soma / TAMANHO_FILTRO;
+}
