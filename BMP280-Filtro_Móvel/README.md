@@ -1,1 +1,1 @@
-# Alguns códigos que usam ESP32 e outros Sensores para capturar dados e fazer algumas ações.
+# Este código Arduino utiliza o sensor BMP280 para medir altitude e temperatura, empregando a técnica de Média Móvel Simples para suavizar as leituras. O resultado é exibido na porta Serial, proporcionando medições mais estáveis e confiáveis em ambientes propensos a ruídos.
