@@ -1,1 +1,1 @@
-# Projetos com o ESP32
+# Este código usa o sensor MPU6050 e ESP32, assim ele lê a aceleração no eixo x. Aplica um filtro de Média Móvel Simples para suavizar os dados brutos, oferecendo uma representação mais estável do sinal. Durante a inicialização, aguarda 10 segundos, inicia a comunicação serial e configura o MPU6050. O loop principal executa a leitura suavizada, exibindo o resultado na porta Serial para obter medições confiáveis em ambientes ruidosos.
