@@ -1,14 +1,3 @@
-/*
- Teste do sensor MPU6050 com o microcontrolador ESP32 e 
- filtragem dos dados pelo filtro Média Móvel.
-
- OBS: Nesse código só utilizamos um dados (aceleracao no eixo x)
- mas o código pode ser facilmente alterado para todos os 7 dados que
- o sensor pode nos enviar.
-
-  Testado: Não
-*/
-
 #include <Wire.h> // Biblioteca para o protocolo de cominicação I2C
 
 #define MPU_endereco 0x68 // Endereço do sensor
